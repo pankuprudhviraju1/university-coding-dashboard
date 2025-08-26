@@ -577,11 +577,26 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="year">Academic Year</label>
-                            <select id="year">
-                                <option value="">Select Year</option>
+                            <label for="degree">Degree</label>
+                            <select id="degree" onchange="updateYearOptions()">
+                                <option value="">Select Degree</option>
                                 <option value="B.Tech">B.Tech</option>
                                 <option value="M.Tech">M.Tech</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="yearGroup" style="display: none;">
+                            <label for="year">Academic Year</label>
+                            <select id="year">
+                                <!-- Options will be populated by JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" id="otherYearGroup" style="display: none;">
+                            <label for="otherYear">Academic Year</label>
+                            <select id="otherYear">
+                                <option value="">Select Year</option>
                                 <option value="1st Year">1st Year</option>
                                 <option value="2nd Year">2nd Year</option>
                                 <option value="3rd Year">3rd Year</option>
@@ -589,7 +604,9 @@
                                 <option value="Graduate">Graduate</option>
                             </select>
                         </div>
-                        <div class="form-group">
+
+                    <div class="form-row">
+                        <div class="form-group" style="grid-column: span 2;">
                             <label for="department">Department</label>
                             <input type="text" id="department" placeholder="e.g., Computer Science">
                         </div>
@@ -686,13 +703,6 @@
                     </select>
                     <select class="filter-select" id="yearFilter">
                         <option value="">All Years</option>
-                        <option value="B.Tech">B.Tech</option>
-                        <option value="M.Tech">M.Tech</option>
-                        <option value="1st Year">1st Year</option>
-                        <option value="2nd Year">2nd Year</option>
-                        <option value="3rd Year">3rd Year</option>
-                        <option value="4th Year">4th Year</option>
-                        <option value="Graduate">Graduate</option>
                     </select>
                     <select class="filter-select" id="sortBy">
                         <option value="total">Sort by Total Score</option>
@@ -721,6 +731,7 @@
             {
                 name: "Alex Johnson",
                 university: "MIT",
+                degree: "B.Tech",
                 year: "3rd Year",
                 department: "Computer Science",
                 codechef: "alexj_codes",
@@ -736,6 +747,7 @@
             {
                 name: "Sarah Chen",
                 university: "Stanford",
+                degree: "B.Tech",
                 year: "4th Year",
                 department: "Computer Science",
                 codechef: "sarah_chen",
@@ -751,6 +763,7 @@
             {
                 name: "Mike Rodriguez",
                 university: "UC Berkeley",
+                degree: "M.Tech",
                 year: "2nd Year",
                 department: "Computer Science",
                 codechef: "mike_rod",
@@ -770,17 +783,14 @@
 
         // Function to switch between Register and Dashboard tabs
         function switchTab(tabName) {
-            // Remove active class from all tabs and contents
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             
-            // Add active class to the correct tab button
             const activeBtn = document.querySelector(`.tab-btn[onclick="switchTab('${tabName}')"]`);
             if (activeBtn) {
                 activeBtn.classList.add('active');
             }
             
-            // Show the corresponding content
             const activeContent = document.getElementById(tabName);
             if (activeContent) {
                 activeContent.classList.add('active');
@@ -788,6 +798,46 @@
             
             if (tabName === 'dashboard') {
                 updateDashboard();
+            }
+        }
+        
+        // Dynamically update the year dropdown based on degree selection
+        function updateYearOptions() {
+            const degreeSelect = document.getElementById('degree');
+            const yearGroup = document.getElementById('yearGroup');
+            const yearSelect = document.getElementById('year');
+            const otherYearGroup = document.getElementById('otherYearGroup');
+
+            const degreeValue = degreeSelect.value;
+            yearGroup.style.display = 'none';
+            otherYearGroup.style.display = 'none';
+
+            // Clear previous options
+            yearSelect.innerHTML = '';
+            
+            let options = [];
+            if (degreeValue === 'B.Tech') {
+                options = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+            } else if (degreeValue === 'M.Tech') {
+                options = ['1st Year', '2nd Year'];
+            } else if (degreeValue === 'Other') {
+                otherYearGroup.style.display = 'block';
+                return;
+            }
+
+            if (options.length > 0) {
+                yearGroup.style.display = 'block';
+                const defaultOption = document.createElement('option');
+                defaultOption.value = "";
+                defaultOption.textContent = "Select Year";
+                yearSelect.appendChild(defaultOption);
+
+                options.forEach(optionText => {
+                    const option = document.createElement('option');
+                    option.value = optionText;
+                    option.textContent = optionText;
+                    yearSelect.appendChild(option);
+                });
             }
         }
 
@@ -834,7 +884,6 @@
             const universities = [...new Set(students.map(student => student.university))].sort();
             const universityFilter = document.getElementById('universityFilter');
             
-            // Clear existing options except the first one
             universityFilter.innerHTML = '<option value="">All Universities</option>';
             
             universities.forEach(uni => {
@@ -842,6 +891,21 @@
                 option.value = uni;
                 option.textContent = uni;
                 universityFilter.appendChild(option);
+            });
+        }
+        
+        // Function to update the year filter dropdown
+        function updateYearFilter() {
+             const years = [...new Set(students.map(student => student.year))].sort();
+             const yearFilter = document.getElementById('yearFilter');
+            
+            yearFilter.innerHTML = '<option value="">All Years</option>';
+            
+            years.forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearFilter.appendChild(option);
             });
         }
 
@@ -990,6 +1054,7 @@
             
             updateStats();
             updateUniversityFilter();
+            updateYearFilter();
         }
 
         // Add student function
@@ -1000,16 +1065,23 @@
             
             // Check required fields
             if (!name || !university) {
-                // Instead of alert, use a better UX, like a temporary message
-                // For now, let's just log to the console
                 console.error('Please fill in at least Name and University fields!');
                 return;
+            }
+            
+            const degree = document.getElementById('degree').value;
+            let year = '';
+            if (degree === 'Other') {
+                year = document.getElementById('otherYear').value || 'Not specified';
+            } else {
+                year = document.getElementById('year').value || 'Not specified';
             }
             
             const formData = {
                 name: name,
                 university: university,
-                year: document.getElementById('year').value || 'Not specified',
+                degree: degree || 'Not specified',
+                year: year,
                 department: document.getElementById('department').value || 'Not specified',
                 codechef: document.getElementById('codechef').value || '',
                 codechefProblems: parseInt(document.getElementById('codechefProblems').value) || 0,
@@ -1022,7 +1094,6 @@
                 leetcodeContests: parseInt(document.getElementById('leetcodeContests').value) || 0
             };
             
-            // Add to students array
             students.push(formData);
             
             // Reset form
@@ -1042,6 +1113,7 @@
         window.onload = function() {
             updateDashboard();
             updateUniversityFilter();
+            updateYearFilter();
         };
     </script>
 </body>
