@@ -842,7 +842,10 @@
         let appId;
         let isDbInitialized = false;
 
-        // Configuration from Firebase Console
+        // ====================================================================
+        // IMPORTANT: Paste your Firebase configuration object below.
+        // It must be valid JSON, with all keys and string values in double quotes.
+        // ====================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyBoN3WSI2hy83XdYtb_MjqA1Wcv5dxlMp8",
             authDomain: "coding-platform-dashboard.firebaseapp.com",
@@ -852,13 +855,17 @@
             appId: "1:540340102850:web:243b217144ac21aab27d5b",
             measurementId: "G-ZG02B57LKH"
         };
+        // ====================================================================
+        // End of Firebase configuration
+        // ====================================================================
         
         // Wait for the window to fully load before initializing Firebase
         window.onload = async function() {
             try {
-                // Ensure firebaseConfigString is a single line, valid JSON string
-                const singleLineConfig = firebaseConfigString.replace(/\s+/g, '');
-                const firebaseConfig = JSON.parse(singleLineConfig);
+                // Ensure firebaseConfig is a valid object
+                if (typeof firebaseConfig !== 'object' || !firebaseConfig.projectId) {
+                    throw new Error("Invalid Firebase configuration provided.");
+                }
 
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
