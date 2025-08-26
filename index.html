@@ -769,7 +769,10 @@
         <!-- Dashboard Tab -->
         <div class="tab-content" id="dashboard">
             <div class="dashboard">
-                <h2>🏆 Student Rankings</h2>
+                <div class="flex items-center justify-between mb-8">
+                    <h2>🏆 Student Rankings</h2>
+                    <div id="statusMessage" class="text-sm font-medium">Connecting to database...</div>
+                </div>
                 
                 <div class="stats-overview" id="statsOverview">
                     <div class="stat-card">
@@ -837,16 +840,29 @@
         let auth;
         let students = [];
         let currentView = 'list';
-        let __app_id = "default-app-id";
-        let __firebase_config = '{}';
 
         // Wait for the window to fully load before initializing Firebase
         window.onload = async function() {
+            // Get Firebase config from local storage or prompt the user
+            let firebaseConfigString = localStorage.getItem('firebaseConfig');
+            if (!firebaseConfigString) {
+                firebaseConfigString = prompt("Please paste your Firebase configuration object here:");
+                if (firebaseConfigString) {
+                    localStorage.setItem('firebaseConfig', firebaseConfigString);
+                } else {
+                    document.getElementById('statusMessage').textContent = "Firebase config not provided. Cannot connect.";
+                    return;
+                }
+            }
+
             try {
-                const firebaseConfig = JSON.parse(__firebase_config);
+                const firebaseConfig = JSON.parse(firebaseConfigString);
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
+                document.getElementById('statusMessage').textContent = "Successfully connected to Firebase!";
+                
+                const appId = firebaseConfig.appId;
 
                 // Sign in anonymously for simple access
                 if (typeof __initial_auth_token !== 'undefined') {
@@ -858,7 +874,6 @@
                 // Listen for authentication state changes and then fetch data
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
-                        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
                         const studentsRef = collection(db, `artifacts/${appId}/public/data/students`);
                         const q = query(studentsRef);
 
@@ -876,13 +891,14 @@
 
             } catch (error) {
                 console.error("Error initializing Firebase:", error);
+                document.getElementById('statusMessage').textContent = "Error: Invalid Firebase config or database issue.";
                 // Display a user-friendly error message
                 const container = document.getElementById('studentsContainer');
                 if (container) {
                      container.innerHTML = `
                         <div class="empty-state">
                             <h3>Error Loading Data</h3>
-                            <p>Could not connect to the database. Please try again later.</p>
+                            <p>Could not connect to the database. Check console for details. (F12)</p>
                         </div>
                     `;
                 }
