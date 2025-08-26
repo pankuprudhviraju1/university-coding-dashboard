@@ -7,6 +7,79 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
+        :root {
+            --bg-start: #667eea;
+            --bg-end: #764ba2;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --header-bg: rgba(255, 255, 255, 0.1);
+            --border-color: rgba(255, 255, 255, 0.2);
+            --text-color: #333;
+            --header-text: white;
+            --tab-bg: rgba(255, 255, 255, 0.1);
+            --tab-hover: rgba(255, 255, 255, 0.2);
+            --input-bg: rgba(255, 255, 255, 0.9);
+            --input-border: #e0e6ed;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --button-primary: #667eea;
+            --button-secondary: #764ba2;
+            --link-color: #ff6b6b;
+            --link-secondary: #ee5a24;
+            --card-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            --table-hover: #f8f9ff;
+            --platform-bg: #f0f4ff;
+        }
+
+        .dark-mode {
+            --bg-start: #1c2a4f;
+            --bg-end: #121a36;
+            --card-bg: rgba(28, 42, 79, 0.95);
+            --header-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-color: #e0e0e0;
+            --header-text: #fff;
+            --tab-bg: rgba(255, 255, 255, 0.05);
+            --tab-hover: rgba(255, 255, 255, 0.1);
+            --input-bg: rgba(28, 42, 79, 0.8);
+            --input-border: #3f558a;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --button-primary: #4a77e8;
+            --button-secondary: #6046a6;
+            --link-color: #ff8c6b;
+            --link-secondary: #ff7240;
+            --card-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            --table-hover: #22355c;
+            --platform-bg: #2d3c63;
+        }
+
+        .dark-mode .table-row:hover {
+            background: var(--table-hover);
+        }
+
+        .dark-mode .dashboard h2,
+        .dark-mode .stat-number {
+            background: linear-gradient(135deg, var(--button-primary), var(--button-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .dark-mode .stat-label,
+        .dark-mode .student-uni,
+        .dark-mode .empty-state h3,
+        .dark-mode .empty-state p {
+            color: #b0b0b0;
+        }
+
+        .dark-mode .student-name,
+        .dark-mode .platform-score,
+        .dark-mode .name-cell .student-name {
+            color: #e0e0e0;
+        }
+        
+        .dark-mode .rank-cell.rank-other {
+            color: var(--button-primary);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -15,9 +88,10 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
             min-height: 100vh;
-            color: #333;
+            color: var(--text-color);
+            transition: background-color 0.5s ease;
         }
 
         .container {
@@ -29,16 +103,32 @@
         .header {
             text-align: center;
             margin-bottom: 40px;
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--header-bg);
             backdrop-filter: blur(10px);
             padding: 30px;
             border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+        
+        #themeToggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+        #themeToggle:hover {
+            transform: scale(1.1);
         }
 
         .header h1 {
-            color: white;
+            color: var(--header-text);
             font-size: 3em;
             margin-bottom: 10px;
             text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
@@ -53,11 +143,11 @@
             display: flex;
             justify-content: center;
             margin-bottom: 30px;
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--tab-bg);
             backdrop-filter: blur(10px);
             padding: 10px;
             border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--border-color);
         }
 
         .tab-btn {
@@ -65,7 +155,7 @@
             border: none;
             padding: 15px 30px;
             margin: 0 5px;
-            color: white;
+            color: var(--header-text);
             cursor: pointer;
             border-radius: 10px;
             transition: all 0.3s ease;
@@ -74,13 +164,13 @@
         }
 
         .tab-btn.active {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            background: linear-gradient(135deg, var(--link-color), var(--link-secondary));
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(238, 90, 36, 0.4);
         }
 
         .tab-btn:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.2);
+            background: var(--tab-hover);
             transform: translateY(-1px);
         }
 
@@ -99,7 +189,7 @@
         }
 
         .form-container {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--card-bg);
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
@@ -121,29 +211,30 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #555;
+            color: var(--text-color);
             font-size: 1.1em;
         }
 
         input, select {
             width: 100%;
             padding: 15px;
-            border: 2px solid #e0e6ed;
+            border: 2px solid var(--input-border);
             border-radius: 12px;
             font-size: 1em;
             transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.9);
+            background: var(--input-bg);
+            color: var(--text-color);
         }
 
         input:focus, select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--button-primary);
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
         }
 
         .submit-btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, var(--button-primary), var(--button-secondary));
             color: white;
             border: none;
             padding: 18px 40px;
@@ -162,19 +253,19 @@
         }
 
         .dashboard {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--card-bg);
             border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--card-shadow);
             backdrop-filter: blur(10px);
         }
 
         .dashboard h2 {
-            color: #333;
+            color: var(--text-color);
             margin-bottom: 30px;
             font-size: 2.2em;
             text-align: center;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, var(--button-primary), var(--button-secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -186,14 +277,23 @@
             margin-bottom: 30px;
             flex-wrap: wrap;
             justify-content: center;
+            align-items: center;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
         }
 
         .filter-select {
             padding: 12px 20px;
-            border: 2px solid #e0e6ed;
+            border: 2px solid var(--input-border);
             border-radius: 10px;
             background: white;
             min-width: 180px;
+            color: var(--text-color);
         }
 
         .view-toggle {
@@ -215,8 +315,8 @@
         }
 
         .view-btn.active {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-            border-color: #ff6b6b;
+            background: linear-gradient(135deg, var(--link-color), var(--link-secondary));
+            border-color: var(--link-color);
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(238, 90, 36, 0.4);
         }
@@ -230,14 +330,14 @@
             background: white;
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--card-shadow);
             margin-top: 20px;
             display: table;
             width: 100%;
         }
 
         .table-header {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, var(--button-primary), var(--button-secondary));
             color: white;
             display: table-header-group;
             font-weight: 600;
@@ -256,7 +356,7 @@
         }
 
         .table-row:hover {
-            background: #f8f9ff;
+            background: var(--table-hover);
             transform: scale(1.01);
         }
 
@@ -279,7 +379,7 @@
         .rank-cell.rank-1 { color: #ffd700; }
         .rank-cell.rank-2 { color: #c0c0c0; }
         .rank-cell.rank-3 { color: #cd7f32; }
-        .rank-cell.rank-other { color: #667eea; }
+        .rank-cell.rank-other { color: var(--button-primary); }
 
         .name-cell {
             text-align: left;
@@ -288,7 +388,7 @@
 
         .name-cell .student-name {
             font-weight: 600;
-            color: #333;
+            color: var(--text-color);
             margin-bottom: 2px;
         }
 
@@ -298,11 +398,11 @@
         }
 
         .platform-score {
-            background: #f0f4ff;
+            background: var(--platform-bg);
             padding: 8px 12px;
             border-radius: 8px;
             font-weight: 600;
-            color: #333;
+            color: var(--text-color);
             border-left: 3px solid;
             display: inline-block;
         }
@@ -319,10 +419,10 @@
         }
 
         .student-card {
-            background: white;
+            background: var(--card-bg);
             padding: 25px;
             border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--card-shadow);
             transition: all 0.3s ease;
             border-left: 5px solid;
             position: relative;
@@ -336,7 +436,7 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
+            background: linear-gradient(90deg, var(--button-primary), var(--button-secondary));
         }
 
         .student-card:hover {
@@ -347,7 +447,7 @@
         .student-card.rank-1 { border-left-color: #ffd700; }
         .student-card.rank-2 { border-left-color: #c0c0c0; }
         .student-card.rank-3 { border-left-color: #cd7f32; }
-        .student-card.rank-other { border-left-color: #667eea; }
+        .student-card.rank-other { border-left-color: var(--button-primary); }
 
         .student-header {
             display: flex;
@@ -359,12 +459,12 @@
         .student-name {
             font-size: 1.4em;
             font-weight: 700;
-            color: #333;
+            color: var(--text-color);
             margin-bottom: 2px;
         }
 
         .rank-badge {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, var(--button-primary), var(--button-secondary));
             color: white;
             padding: 8px 16px;
             border-radius: 20px;
@@ -429,7 +529,7 @@
             text-align: center;
             margin-top: 20px;
             padding: 15px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, var(--button-primary), var(--button-secondary));
             color: white;
             border-radius: 10px;
             font-weight: 700;
@@ -437,7 +537,7 @@
         }
 
         .total-score-cell {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, var(--button-primary), var(--button-secondary));
             color: white;
             padding: 10px;
             border-radius: 8px;
@@ -464,11 +564,11 @@
         }
 
         .stat-card {
-            background: white;
+            background: var(--card-bg);
             padding: 25px;
             border-radius: 15px;
             text-align: center;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--card-shadow);
             transition: all 0.3s ease;
         }
 
@@ -479,14 +579,14 @@
         .stat-number {
             font-size: 2.5em;
             font-weight: 700;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, var(--button-primary), var(--button-secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .stat-label {
-            color: #666;
+            color: var(--text-color);
             margin-top: 5px;
             font-weight: 500;
         }
@@ -548,6 +648,7 @@
     <div class="container">
         <!-- Header Section -->
         <div class="header">
+            <button id="themeToggle">☀️</button>
             <h1>🏆 CodeTrack</h1>
             <p>University Coding Platform Dashboard</p>
         </div>
@@ -698,17 +799,23 @@
                 </div>
 
                 <div class="filters">
-                    <select class="filter-select" id="universityFilter">
-                        <option value="">All Universities</option>
-                    </select>
-                    <select class="filter-select" id="yearFilter">
-                        <option value="">All Years</option>
-                    </select>
-                    <select class="filter-select" id="sortBy">
-                        <option value="total">Sort by Total Score</option>
-                        <option value="problems">Sort by Problems Solved</option>
-                        <option value="contests">Sort by Contests</option>
-                    </select>
+                    <div class="filter-group">
+                        <select class="filter-select" id="universityFilter">
+                            <option value="">All Universities</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <select class="filter-select" id="yearFilter">
+                            <option value="">All Years</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <select class="filter-select" id="sortBy">
+                            <option value="total">Sort by Total Score</option>
+                            <option value="problems">Sort by Problems Solved</option>
+                            <option value="contests">Sort by Contests</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div id="studentsContainer">
@@ -720,69 +827,76 @@
             </div>
         </div>
     </div>
+    
+    <!-- Firebase Libraries -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    <script>
-        // Global variables to store the current state
-        let currentView = 'list';
+        // Global variables for Firebase services
+        let db;
+        let auth;
         let students = [];
+        let __app_id = "default-app-id";
+        let __firebase_config = '{}';
 
-        // Sample data for demonstration
-        const sampleStudents = [
-            {
-                name: "Alex Johnson",
-                university: "MIT",
-                degree: "B.Tech",
-                year: "3rd Year",
-                department: "Computer Science",
-                codechef: "alexj_codes",
-                codechefProblems: 450,
-                codechefContests: 25,
-                codeforces: "alex_coder",
-                codeforcesProblems: 380,
-                codeforcesContests: 30,
-                leetcode: "alexjohnson",
-                leetcodeProblems: 520,
-                leetcodeContests: 15
-            },
-            {
-                name: "Sarah Chen",
-                university: "Stanford",
-                degree: "B.Tech",
-                year: "4th Year",
-                department: "Computer Science",
-                codechef: "sarah_chen",
-                codechefProblems: 520,
-                codechefContests: 35,
-                codeforces: "sarahc",
-                codeforcesProblems: 420,
-                codeforcesContests: 28,
-                leetcode: "sarah_codes",
-                leetcodeProblems: 610,
-                leetcodeContests: 22
-            },
-            {
-                name: "Mike Rodriguez",
-                university: "UC Berkeley",
-                degree: "M.Tech",
-                year: "2nd Year",
-                department: "Computer Science",
-                codechef: "mike_rod",
-                codechefProblems: 280,
-                codechefContests: 18,
-                codeforces: "mikeR",
-                codeforcesProblems: 320,
-                codeforcesContests: 20,
-                leetcode: "mike_r",
-                leetcodeProblems: 380,
-                leetcodeContests: 12
+        // Wait for the window to fully load before initializing Firebase
+        window.onload = async function() {
+            try {
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // Sign in anonymously for simple access
+                if (typeof __initial_auth_token !== 'undefined') {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                // Listen for authentication state changes and then fetch data
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                        const userId = user.uid;
+                        
+                        // Set up a real-time listener for the students collection
+                        const studentsRef = collection(db, `artifacts/${appId}/public/data/students`);
+                        const q = query(studentsRef);
+
+                        onSnapshot(q, (snapshot) => {
+                            students = [];
+                            snapshot.forEach((doc) => {
+                                students.push(doc.data());
+                            });
+                            updateDashboard();
+                        });
+                    } else {
+                        console.log("User is signed out.");
+                    }
+                });
+
+            } catch (error) {
+                console.error("Error initializing Firebase:", error);
             }
-        ];
-
-        // Load sample data on page load
-        students = [...sampleStudents];
+            
+            // Initial UI updates
+            updateYearOptions();
+            updateDashboard();
+            
+            // Load theme preference from localStorage
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('themeToggle').textContent = '🌙';
+            } else {
+                document.getElementById('themeToggle').textContent = '☀️';
+            }
+        };
 
         // Function to switch between Register and Dashboard tabs
-        function switchTab(tabName) {
+        window.switchTab = function(tabName) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             
@@ -799,10 +913,10 @@
             if (tabName === 'dashboard') {
                 updateDashboard();
             }
-        }
-        
+        };
+
         // Dynamically update the year dropdown based on degree selection
-        function updateYearOptions() {
+        window.updateYearOptions = function() {
             const degreeSelect = document.getElementById('degree');
             const yearGroup = document.getElementById('yearGroup');
             const yearSelect = document.getElementById('year');
@@ -812,7 +926,6 @@
             yearGroup.style.display = 'none';
             otherYearGroup.style.display = 'none';
 
-            // Clear previous options
             yearSelect.innerHTML = '';
             
             let options = [];
@@ -839,7 +952,7 @@
                     yearSelect.appendChild(option);
                 });
             }
-        }
+        };
 
         // Helper function to calculate a total score for ranking
         function calculateTotalScore(student) {
@@ -880,7 +993,7 @@
         }
 
         // Function to update the university filter dropdown
-        function updateUniversityFilter() {
+        window.updateUniversityFilter = function(selectedUni = '') {
             const universities = [...new Set(students.map(student => student.university))].sort();
             const universityFilter = document.getElementById('universityFilter');
             
@@ -892,12 +1005,17 @@
                 option.textContent = uni;
                 universityFilter.appendChild(option);
             });
-        }
+            
+            // Set the selected value after populating
+            if (selectedUni) {
+                universityFilter.value = selectedUni;
+            }
+        };
         
         // Function to update the year filter dropdown
-        function updateYearFilter() {
-             const years = [...new Set(students.map(student => student.year))].sort();
-             const yearFilter = document.getElementById('yearFilter');
+        window.updateYearFilter = function(selectedYear = '') {
+            const years = [...new Set(students.map(student => student.year))].sort();
+            const yearFilter = document.getElementById('yearFilter');
             
             yearFilter.innerHTML = '<option value="">All Years</option>';
             
@@ -907,7 +1025,11 @@
                 option.textContent = year;
                 yearFilter.appendChild(option);
             });
-        }
+            
+            if (selectedYear) {
+                yearFilter.value = selectedYear;
+            }
+        };
 
         // Function to filter and sort students based on user selections
         function filterAndSortStudents() {
@@ -938,7 +1060,7 @@
         }
 
         // The main function to update the dashboard view
-        function updateDashboard() {
+        window.updateDashboard = function() {
             const filteredStudents = filterAndSortStudents();
             const container = document.getElementById('studentsContainer');
             
@@ -1053,12 +1175,15 @@
             }
             
             updateStats();
-            updateUniversityFilter();
-            updateYearFilter();
-        }
+            // Re-populate and maintain filter selections
+            const selectedUni = document.getElementById('universityFilter').value;
+            const selectedYear = document.getElementById('yearFilter').value;
+            updateUniversityFilter(selectedUni);
+            updateYearFilter(selectedYear);
+        };
 
         // Add student function
-        function addStudent() {
+        window.addStudent = async function() {
             // Get form values
             const name = document.getElementById('name').value.trim();
             const university = document.getElementById('university').value.trim();
@@ -1094,27 +1219,36 @@
                 leetcodeContests: parseInt(document.getElementById('leetcodeContests').value) || 0
             };
             
-            students.push(formData);
+            try {
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                await addDoc(collection(db, `artifacts/${appId}/public/data/students`), formData);
+                console.log("Student data successfully written to Firestore!");
+            } catch (e) {
+                console.error("Error adding document: ", e);
+            }
             
             // Reset form
             document.getElementById('studentForm').reset();
+            updateYearOptions(); // Reset the dynamic year field
             
-            // Update dashboard and switch tab
-            updateDashboard();
-            switchTab('dashboard');
-        }
+            // Note: The dashboard update is now handled by the onSnapshot listener,
+            // which will automatically refresh the data when the Firestore doc is added.
+            window.switchTab('dashboard');
+        };
 
-        // Event listeners for filters
+        // Theme toggle functionality
+        window.toggleTheme = function() {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+            document.getElementById('themeToggle').textContent = isDarkMode ? '🌙' : '☀️';
+        };
+
+        // Event listeners for filters and theme toggle
         document.getElementById('universityFilter').addEventListener('change', updateDashboard);
         document.getElementById('yearFilter').addEventListener('change', updateDashboard);
         document.getElementById('sortBy').addEventListener('change', updateDashboard);
-
-        // Initial function calls on page load
-        window.onload = function() {
-            updateDashboard();
-            updateUniversityFilter();
-            updateYearFilter();
-        };
+        document.getElementById('themeToggle').addEventListener('click', toggleTheme);
     </script>
 </body>
 </html>
