@@ -194,6 +194,115 @@
             min-width: 180px;
         }
 
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .view-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .view-btn.active {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            border-color: #ff6b6b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(238, 90, 36, 0.4);
+        }
+
+        .view-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .students-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px 0;
+            display: grid;
+            grid-template-columns: 60px 200px 150px 100px 1fr 1fr 1fr 120px;
+            gap: 15px;
+            align-items: center;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 60px 200px 150px 100px 1fr 1fr 1fr 120px;
+            gap: 15px;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .table-row:hover {
+            background: #f8f9ff;
+            transform: scale(1.01);
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .rank-cell {
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+
+        .rank-cell.rank-1 { color: #ffd700; }
+        .rank-cell.rank-2 { color: #c0c0c0; }
+        .rank-cell.rank-3 { color: #cd7f32; }
+        .rank-cell.rank-other { color: #667eea; }
+
+        .name-cell {
+            text-align: left;
+            padding-left: 10px;
+        }
+
+        .name-cell .student-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .name-cell .student-uni {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .platform-score {
+            background: #f0f4ff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #333;
+            border-left: 3px solid;
+        }
+
+        .platform-score.codechef { border-left-color: #5cb85c; }
+        .platform-score.codeforces { border-left-color: #1f8dd6; }
+        .platform-score.leetcode { border-left-color: #ff6b35; }
+
         .student-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -318,6 +427,15 @@
             font-size: 1.2em;
         }
 
+        .total-score-cell {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            margin: 0 5px;
+        }
+
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -388,6 +506,22 @@
             
             .stats-overview {
                 grid-template-columns: repeat(2, 1fr);
+            }
+
+            .table-header, .table-row {
+                grid-template-columns: 40px 150px 80px 60px 1fr 1fr 1fr 80px;
+                gap: 5px;
+                font-size: 0.9em;
+            }
+
+            .platform-score {
+                padding: 4px 6px;
+                font-size: 0.8em;
+            }
+
+            .view-toggle {
+                flex-direction: column;
+                gap: 5px;
             }
         }
     </style>
@@ -519,6 +653,11 @@
                     </div>
                 </div>
 
+                <div class="view-toggle">
+                    <button class="view-btn active" id="listViewBtn" onclick="switchView('list')">📋 List View</button>
+                    <button class="view-btn" id="cardViewBtn" onclick="switchView('cards')">🎴 Card View</button>
+                </div>
+
                 <div class="filters">
                     <select class="filter-select" id="universityFilter">
                         <option value="">All Universities</option>
@@ -549,7 +688,19 @@
     </div>
 
     <script>
+        let currentView = 'list';
         let students = [];
+
+        function switchView(view) {
+            currentView = view;
+            
+            // Update button states
+            document.getElementById('listViewBtn').classList.toggle('active', view === 'list');
+            document.getElementById('cardViewBtn').classList.toggle('active', view === 'cards');
+            
+            // Update dashboard display
+            updateDashboard();
+        }
 
         // Sample data for demonstration
         const sampleStudents = [
@@ -712,51 +863,107 @@
                 return;
             }
 
-            const studentsHTML = filteredStudents.map((student, index) => {
-                const rank = index + 1;
-                const totalScore = calculateTotalScore(student);
-                const totalProblems = getTotalProblems(student);
-                const totalContests = getTotalContests(student);
-                
-                return `
-                    <div class="student-card ${getRankClass(rank)}">
-                        <div class="student-header">
-                            <div class="student-name">${student.name}</div>
-                            <div class="rank-badge ${getRankClass(rank)}">
-                                ${rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '#' + rank}
-                            </div>
+            if (currentView === 'list') {
+                // List/Table View
+                const tableHTML = `
+                    <div class="students-table">
+                        <div class="table-header">
+                            <div>Rank</div>
+                            <div>Student</div>
+                            <div>Year/Dept</div>
+                            <div>Total</div>
+                            <div>CodeChef</div>
+                            <div>Codeforces</div>
+                            <div>LeetCode</div>
+                            <div>Score</div>
                         </div>
-                        
-                        <div class="student-info">
-                            <strong>${student.university}</strong> • ${student.year} • ${student.department}
-                        </div>
-                        
-                        <div class="platforms">
-                            <div class="platform codechef">
-                                <h4>CodeChef</h4>
-                                <div class="score">${student.codechefProblems || 0}</div>
-                                <small>${student.codechefContests || 0} contests</small>
-                            </div>
-                            <div class="platform codeforces">
-                                <h4>Codeforces</h4>
-                                <div class="score">${student.codeforcesProblems || 0}</div>
-                                <small>${student.codeforcesContests || 0} contests</small>
-                            </div>
-                            <div class="platform leetcode">
-                                <h4>LeetCode</h4>
-                                <div class="score">${student.leetcodeProblems || 0}</div>
-                                <small>${student.leetcodeContests || 0} contests</small>
-                            </div>
-                        </div>
-                        
-                        <div class="total-score">
-                            Total Score: ${totalScore} | Problems: ${totalProblems} | Contests: ${totalContests}
-                        </div>
+                        ${filteredStudents.map((student, index) => {
+                            const rank = index + 1;
+                            const totalScore = calculateTotalScore(student);
+                            const totalProblems = getTotalProblems(student);
+                            
+                            return `
+                                <div class="table-row">
+                                    <div class="rank-cell ${getRankClass(rank)}">
+                                        ${rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '#' + rank}
+                                    </div>
+                                    <div class="name-cell">
+                                        <div class="student-name">${student.name}</div>
+                                        <div class="student-uni">${student.university}</div>
+                                    </div>
+                                    <div>
+                                        <div>${student.year}</div>
+                                        <div style="font-size: 0.8em; color: #666;">${student.department}</div>
+                                    </div>
+                                    <div style="font-weight: 700; color: #333;">${totalProblems}</div>
+                                    <div>
+                                        <div class="platform-score codechef">${student.codechefProblems || 0}</div>
+                                        <div style="font-size: 0.8em; color: #666; margin-top: 2px;">${student.codechefContests || 0} contests</div>
+                                    </div>
+                                    <div>
+                                        <div class="platform-score codeforces">${student.codeforcesProblems || 0}</div>
+                                        <div style="font-size: 0.8em; color: #666; margin-top: 2px;">${student.codeforcesContests || 0} contests</div>
+                                    </div>
+                                    <div>
+                                        <div class="platform-score leetcode">${student.leetcodeProblems || 0}</div>
+                                        <div style="font-size: 0.8em; color: #666; margin-top: 2px;">${student.leetcodeContests || 0} contests</div>
+                                    </div>
+                                    <div class="total-score-cell">${totalScore}</div>
+                                </div>
+                            `;
+                        }).join('')}
                     </div>
                 `;
-            }).join('');
+                container.innerHTML = tableHTML;
+            } else {
+                // Card View (Original)
+                const studentsHTML = filteredStudents.map((student, index) => {
+                    const rank = index + 1;
+                    const totalScore = calculateTotalScore(student);
+                    const totalProblems = getTotalProblems(student);
+                    const totalContests = getTotalContests(student);
+                    
+                    return `
+                        <div class="student-card ${getRankClass(rank)}">
+                            <div class="student-header">
+                                <div class="student-name">${student.name}</div>
+                                <div class="rank-badge ${getRankClass(rank)}">
+                                    ${rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '#' + rank}
+                                </div>
+                            </div>
+                            
+                            <div class="student-info">
+                                <strong>${student.university}</strong> • ${student.year} • ${student.department}
+                            </div>
+                            
+                            <div class="platforms">
+                                <div class="platform codechef">
+                                    <h4>CodeChef</h4>
+                                    <div class="score">${student.codechefProblems || 0}</div>
+                                    <small>${student.codechefContests || 0} contests</small>
+                                </div>
+                                <div class="platform codeforces">
+                                    <h4>Codeforces</h4>
+                                    <div class="score">${student.codeforcesProblems || 0}</div>
+                                    <small>${student.codeforcesContests || 0} contests</small>
+                                </div>
+                                <div class="platform leetcode">
+                                    <h4>LeetCode</h4>
+                                    <div class="score">${student.leetcodeProblems || 0}</div>
+                                    <small>${student.leetcodeContests || 0} contests</small>
+                                </div>
+                            </div>
+                            
+                            <div class="total-score">
+                                Total Score: ${totalScore} | Problems: ${totalProblems} | Contests: ${totalContests}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
 
-            container.innerHTML = `<div class="student-grid">${studentsHTML}</div>`;
+                container.innerHTML = `<div class="student-grid">${studentsHTML}</div>`;
+            }
+            
             updateStats();
             updateUniversityFilter();
         }
