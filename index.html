@@ -605,6 +605,7 @@
             }
             
             .student-grid {
+                display: grid;
                 grid-template-columns: 1fr;
             }
             
@@ -627,10 +628,6 @@
 
             .table-header, .table-row {
                 display: none; /* Hide table on small screens */
-            }
-
-            .student-grid {
-                display: grid;
             }
             
             .tab-btn {
@@ -819,6 +816,7 @@
                 </div>
 
                 <div id="studentsContainer">
+                    <!-- The content here will be updated by JavaScript -->
                     <div class="empty-state">
                         <h3>No students registered yet!</h3>
                         <p>Be the first to add your coding profile to the dashboard.</p>
@@ -838,6 +836,7 @@
         let db;
         let auth;
         let students = [];
+        let currentView = 'list';
         let __app_id = "default-app-id";
         let __firebase_config = '{}';
 
@@ -860,9 +859,6 @@
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
                         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                        const userId = user.uid;
-                        
-                        // Set up a real-time listener for the students collection
                         const studentsRef = collection(db, `artifacts/${appId}/public/data/students`);
                         const q = query(studentsRef);
 
@@ -880,11 +876,20 @@
 
             } catch (error) {
                 console.error("Error initializing Firebase:", error);
+                // Display a user-friendly error message
+                const container = document.getElementById('studentsContainer');
+                if (container) {
+                     container.innerHTML = `
+                        <div class="empty-state">
+                            <h3>Error Loading Data</h3>
+                            <p>Could not connect to the database. Please try again later.</p>
+                        </div>
+                    `;
+                }
             }
             
             // Initial UI updates
             updateYearOptions();
-            updateDashboard();
             
             // Load theme preference from localStorage
             if (localStorage.getItem('theme') === 'dark') {
@@ -893,6 +898,16 @@
             } else {
                 document.getElementById('themeToggle').textContent = '☀️';
             }
+        };
+
+        // Function to switch between list and card views
+        window.switchView = function(view) {
+            currentView = view;
+            
+            document.getElementById('listViewBtn').classList.toggle('active', view === 'list');
+            document.getElementById('cardViewBtn').classList.toggle('active', view === 'cards');
+            
+            updateDashboard();
         };
 
         // Function to switch between Register and Dashboard tabs
