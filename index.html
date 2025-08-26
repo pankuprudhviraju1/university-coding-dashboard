@@ -843,19 +843,23 @@
         let isDbInitialized = false;
 
         // Configuration from Firebase Console
-        const firebaseConfigString = `{
-            "apiKey": "PASTE_YOUR_API_KEY_HERE",
-            "authDomain": "PASTE_YOUR_AUTH_DOMAIN_HERE",
-            "projectId": "PASTE_YOUR_PROJECT_ID_HERE",
-            "storageBucket": "PASTE_YOUR_STORAGE_BUCKET_HERE",
-            "messagingSenderId": "PASTE_YOUR_MESSAGING_SENDER_ID_HERE",
-            "appId": "PASTE_YOUR_APP_ID_HERE"
-        }`;
+        const firebaseConfig = {
+            apiKey: "AIzaSyBoN3WSI2hy83XdYtb_MjqA1Wcv5dxlMp8",
+            authDomain: "coding-platform-dashboard.firebaseapp.com",
+            projectId: "coding-platform-dashboard",
+            storageBucket: "coding-platform-dashboard.firebasestorage.app",
+            messagingSenderId: "540340102850",
+            appId: "1:540340102850:web:243b217144ac21aab27d5b",
+            measurementId: "G-ZG02B57LKH"
+        };
         
         // Wait for the window to fully load before initializing Firebase
         window.onload = async function() {
             try {
-                const firebaseConfig = JSON.parse(firebaseConfigString);
+                // Ensure firebaseConfigString is a single line, valid JSON string
+                const singleLineConfig = firebaseConfigString.replace(/\s+/g, '');
+                const firebaseConfig = JSON.parse(singleLineConfig);
+
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
